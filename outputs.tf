@@ -1,9 +1,9 @@
-output "public_ip" {
- value       = aws_instance.public_instance.public_ip
- description = "Public IP Address of EC2 instance"
+output "public_ips" {
+  value       = [for instance in aws_instance.jenkins_demo : instance.public_ip]
+  description = "Public IP addresses of Jenkins EC2 instances"
 }
 
-output "instance_id" {
- value       = aws_instance.public_instance.id
- description = "Instance ID"
+output "instance_ids" {
+  value       = [for instance in aws_instance.jenkins_demo : instance.id]
+  description = "Instance IDs of Jenkins EC2 instances"
 }

@@ -1,9 +1,9 @@
-resource "aws_instance" "public_instance" {
+resource "aws_instance" "jenkins_demo" {
   ami           = var.ami
   instance_type = var.instance_type
   count         = 2
 
   tags = {
-    Name = var.name_tag
+    Name = format("akumosolutions-%03d", count.index + 1)
   }
 }
