@@ -1,4 +1,4 @@
-pipeline {
+\pipeline {
     agent any
 
     parameters {
@@ -51,13 +51,12 @@ pipeline {
                 ]]) {
                     script {
                         if (params.action == 'apply') {
-                            if (!params.autoApprove) {
-                                def plan = readFile 'tfplan.txt'
-                                input message: "Do you want to apply the plan?",
-                                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+                            if (params.autoApprove) {
+                                // auto approve enabled: apply immediately
                                 sh "terraform apply -input=false tfplan"
                             } else {
-                                sh "terraform apply -input=false -auto-approve tfplan"
+                                // auto approve disabled: skip apply and abort
+                                error "Auto approve is disabled and no manual approval possible. Aborting apply step."
                             }
                         } else if (params.action == 'destroy') {
                             sh "terraform destroy --auto-approve"
