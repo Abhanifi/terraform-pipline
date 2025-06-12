@@ -6,6 +6,10 @@ pipeline {
         choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
     }
 
+    environment {
+        AWS_DEFAULT_REGION = 'us-west-1'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -14,18 +18,24 @@ pipeline {
         }
         stage('Terraform init') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
-                                                 usernameVariable: 'AWS_ACCESS_KEY_ID',
-                                                 passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
                     sh 'terraform init'
                 }
             }
         }
         stage('Plan') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
-                                                 usernameVariable: 'AWS_ACCESS_KEY_ID',
-                                                 passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
                     sh 'terraform plan -out tfplan'
                     sh 'terraform show -no-color tfplan > tfplan.txt'
                 }
@@ -33,9 +43,12 @@ pipeline {
         }
         stage('Apply / Destroy') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
-                                                 usernameVariable: 'AWS_ACCESS_KEY_ID',
-                                                 passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
                     script {
                         if (params.action == 'apply') {
                             if (!params.autoApprove) {
@@ -43,7 +56,6 @@ pipeline {
                                 input message: "Do you want to apply the plan?",
                                 parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                             }
-
                             sh "terraform ${params.action} -input=false tfplan"
                         } else if (params.action == 'destroy') {
                             sh "terraform ${params.action} --auto-approve"
