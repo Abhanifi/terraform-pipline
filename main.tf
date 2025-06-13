@@ -1,11 +1,12 @@
-resource "aws_instance" "my_instance" {
-  ami           = "ami-0abcdef1234567890" # use your correct AMI ID
-  instance_type = "t2.micro"
-
-  # Protect the instance from manual deletion
+resource "aws_instance" "jenkins_demo" {
+  ami                  = var.ami
+  instance_type        = var.instance_type
+  count                = 2
   disable_api_termination = true
 
   tags = {
-    Name = "ProtectedInstance"
+    Name = format("akumo-%03d", count.index + 1)
   }
 }
+
+
