@@ -1,13 +1,11 @@
-resource "aws_instance" "akumo_servers" {
-  ami           = var.ami
-  instance_type = var.instance_type
-  count         = 2
+resource "aws_instance" "my_instance" {
+  ami           = "ami-0abcdef1234567890" # use your correct AMI ID
+  instance_type = "t2.micro"
 
-  ## to ensure the instance cannot be manually deleted 
+  # Protect the instance from manual deletion
   disable_api_termination = true
 
-  ###Assign unique instance naming 
   tags = {
-    Name = "akumo-${count.index + 1}"
+    Name = "ProtectedInstance"
   }
 }
