@@ -16,7 +16,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Abhanifi/terraform-pipline'
             }
         }
-        stage('Terraform init') {
+        stage('Terraform Init') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -28,7 +28,7 @@ pipeline {
                 }
             }
         }
-        stage('Plan') {
+        stage('Terraform Plan') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -36,7 +36,7 @@ pipeline {
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
-                    sh 'terraform plan -out tfplan'
+                    sh 'terraform plan -out=tfplan'
                     sh 'terraform show -no-color tfplan > tfplan.txt'
                 }
             }
@@ -51,17 +51,16 @@ pipeline {
                 ]]) {
                     script {
                         if (params.action == 'apply') {
-                            if (params.autoApprove) {
-                                // auto approve enabled: apply immediately
-                                sh "terraform apply -input=false tfplan"
-                            } else {
-                                // auto approve disabled: skip apply and abort
-                                error "Auto approve is disabled and no manual approval possible. Aborting apply step."
+                            if (!params.autoApprove) {
+                                def plan = readFile('tfplan.txt')
+                                input message: "Review the plan before applying:",
+                                parameters: [text(name: 'Terraform Plan', description: 'Terraform execution plan', defaultValue: plan)]
                             }
+                            sh 'terraform apply -input=false tfplan'
                         } else if (params.action == 'destroy') {
-                            sh "terraform destroy --auto-approve"
+                            sh 'terraform destroy --auto-approve'
                         } else {
-                            error "Invalid action selected. Please choose either 'apply' or 'destroy'."
+                            error "Invalid action selected. Please choose 'apply' or 'destroy'."
                         }
                     }
                 }
