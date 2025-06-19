@@ -20,7 +20,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
+                    credentialsId: '45b5774b-6651-4717-9f86-62bb822a08c1',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
+                    credentialsId: '45b5774b-6651-4717-9f86-62bb822a08c1',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
@@ -45,7 +45,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
+                    credentialsId: '45b5774b-6651-4717-9f86-62bb822a08c1',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
