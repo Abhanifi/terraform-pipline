@@ -2,8 +2,16 @@ pipeline {
     agent any
 
     parameters {
-        booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
-        choice(name: 'action', choices: ['apply', 'destroy'], description: 'Select the action to perform')
+        booleanParam(
+            name: 'autoApprove',
+            defaultValue: false,
+            description: 'Automatically run apply after generating plan?'
+        )
+        choice(
+            name: 'action',
+            choices: ['apply', 'destroy'],
+            description: 'Select the action to perform'
+        )
     }
 
     environment {
@@ -16,11 +24,12 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Abhanifi/terraform-pipline'
             }
         }
+
         stage('Terraform Init') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: '45b5774b-6651-4717-9f86-62bb822a08c1',
+                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
@@ -28,11 +37,12 @@ pipeline {
                 }
             }
         }
+
         stage('Terraform Plan') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: '45b5774b-6651-4717-9f86-62bb822a08c1',
+                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
@@ -41,11 +51,12 @@ pipeline {
                 }
             }
         }
+
         stage('Apply / Destroy') {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: '45b5774b-6651-4717-9f86-62bb822a08c1',
+                    credentialsId: 'f86369d0-b32f-4c53-b549-1237b892eba1',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
